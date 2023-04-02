@@ -1,6 +1,8 @@
 1.  Buat folder share di windows (Host). Misal dengan nama "shared_folder"
 2.  Login ke guest machine di vm, buat sebuah folder untuk mounting. Misal di bawah /mnt
-        # mkdir /mnt/shared_folder
+        ```bash
+		# mkdir /mnt/shared_folder
+		```
 3.  Buka virtual box, Pilih guest host -> Settings -> Shared Folders
     - Klik add new shared folder
     - browse ke folder yang diinginkan
