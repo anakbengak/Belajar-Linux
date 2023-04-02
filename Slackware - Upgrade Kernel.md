@@ -11,14 +11,17 @@ Jika menggunakan metode download package, setelah selesai men-download package l
 ### Rebuild initrd
 
 Ketikkan "getconf LONG_BIT" untuk melihat apakah sistemnya 32 bit atau 64 bit
+
 a. untuk mesin 32 bit
 ```bash
 # /usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.94-smp | bash
 ```
+
 ...b. untuk mesin 64 bit atau uniprocessor
 ```bash
 # /usr/share/mkinitrd/mkinitrd_command_generator.sh -k 5.15.94 | bash
 ```
+
 5.15.94 adalah versi kernel. Sesuaikan dengan versi kernel yang baru diinstall.
     
 3. Konfigurasi Lilo (jika menggunakan Lilo)
