@@ -1,4 +1,4 @@
-1. Upgrade package dari slackpkg
+### Upgrade package dari slackpkg
 ```bash
      # slackpkg upgrade-all
 ```     
@@ -8,7 +8,7 @@ Jika menggunakan metode download package, setelah selesai men-download package l
 	# upgradepkg kernel-*.txz
 ```
 	 
-2. Rebuild initrd
+### Rebuild initrd
 
 Ketikkan "getconf LONG_BIT" untuk melihat apakah sistemnya 32 bit atau 64 bit
 a. untuk mesin 32 bit
