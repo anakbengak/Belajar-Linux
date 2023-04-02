@@ -7,7 +7,7 @@
     - Klik add new shared folder
     - browse ke folder yang diinginkan
         Misal : 
-            Folder Path : D:\VM ADE\shared_folder
+            Folder Path : D:\SOME DIREKTORI\shared_folder
             Folder Name : shared_folder
             Mount Point : /mnt/shared_folder/
             check "make permanent"
