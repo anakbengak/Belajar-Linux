@@ -2,8 +2,8 @@
 ```bash
      # slackpkg upgrade-all
 ```     
-Atau download package dari situs resmi yang menyediakan patch kernel dari(lihat slackware.com)
-Jika menggunakan metode download package, setelah selesai men-download package lalu upgrade kernal dengan syntax:
+... Atau download package dari situs resmi yang menyediakan patch kernel dari(lihat slackware.com)
+... Jika menggunakan metode download package, setelah selesai men-download package lalu upgrade kernal dengan syntax:
 ```bash
 	# upgradepkg kernel-*.txz
 ```
