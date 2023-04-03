@@ -1,0 +1,14 @@
+######################################################################
+Permasalahan:
+- Zabbix server: Utilization of discoverer processes over 75%
+
+Solusi :
+ubah StartDiscoverers=1 menjadi 5 pada file zabbix_server.conf
+lalu restart service zabbix-server
+
+	# nano /etc/zabbix/zabbix_server.conf
+		StartDiscoverers=5
+		
+	# systemctl restart zabbix-server
+
+######################################################################
