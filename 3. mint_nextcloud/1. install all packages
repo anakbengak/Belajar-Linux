@@ -19,7 +19,7 @@
 4. create db
     # mysql -u root
     []> create database nextcloud;
-    []> create user 'bob'@'localhost' identified by 'rahasiaya';
+    []> create user 'bob'@'localhost' identified by 'somepassword';
     []> grant all privileges on nextcloud.* to 'bob'@'localhost';
     []> flush privileges;
     []> exit
@@ -36,7 +36,7 @@
     # nano /etc/apache2/sites-available/nextcloud.conf
     
 <VirtualHost *:80>
-    ServerAdmin persandian@pidiekab.go.id
+    ServerAdmin admin@mail.com
     DocumentRoot /var/www/html/nextcloud/
     ServerName 192.168.0.123
 
@@ -68,15 +68,17 @@
 
 8. Buat Admin Account
     Buka web browser, akses ke 192.168.0.123.
+    
     admin account:
         username : bob
-        password : rahasia774
+        password : P455w0rd
     Data folder biarkan default
+    
     Database
         username : bob
-        password : rahasiaya
-        dbname : nextcloud
-        db host : localhost
+        password : someP455w0rd
+        dbname   : nextcloud
+        db host  : localhost
 
 
 
