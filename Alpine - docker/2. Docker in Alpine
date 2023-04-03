@@ -1,0 +1,16 @@
+1. Paket docker, ada di repository Community. Pastikan repo tsb aktif (check /etc/apk/repositories).
+2. Install docker dan docker-compose
+    # apk add docker
+    # apk add docker-compose
+    
+3. Aktifkan docker dan aktifkan saat boot
+    # rc-update add docker default
+    # service docker start
+    
+3. Buat file docker-compose.yml -> untuk script membuat docker service cek di https://github.com/anakbengak/some-stuff/tree/main/1.%20pi-hole%20on%20docker
+
+4. Untuk mengeksekusi file docker-compose, di dalam direktori dimana file docker-compose.yml berada, jalankan perintah :
+    # docker-compose up -d
+    
+5. Untuk melihat service yang berjalan, jalankan perintah:
+    # docker ps

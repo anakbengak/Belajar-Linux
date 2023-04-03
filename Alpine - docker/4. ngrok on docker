@@ -1,0 +1,25 @@
+1. Buat akun dan daftar di ngrok.com
+
+2. Masuk ke Dashboard -> Your Authtoken, copy token.
+
+3. Masuk ke host docker, ketikkan :
+    # export AUTH_TOKEN="P4573Y0ur70k3n"
+    
+4. Jalankan service ngrok serta hubungkan dengan nginx
+
+        docker run --detach \
+          -e NGROK_AUTHTOKEN=$AUTH_TOKEN \
+          --name ngrok \
+          --restart unless-stopped \
+          ngrok/ngrok:alpine \
+          http 192.168.8.104:8000
+          
+5. Karena belum memiliki nginx, kita buat service untuk running nginx
+
+        docker run --detach \
+          --name nginx \
+          --publish 8000:80 \
+          --restart unless-stopped \
+          nginx:alpine
+
+6. Kembali ke halaman Dashboard ngrok.com, lalu akses Tunnels -> Agents untuk melihat agent yang telah dibuat.

@@ -1,0 +1,38 @@
+1. Buat direktori pihole
+    $ mkdir Docker
+    $ mkdir Docker/pihole
+    $ cd Docker/pihole
+    
+2. Buat file docker-compose.yml
+    $ nano docker-compose.yml
+    
+3. Isikan syntax berikut (silahkan modifikasi parameter-parameter yang dibutuhkan) :
+
+    version: "3"
+    
+    services:
+      pihole:
+        container_name: pihole
+        image: pihole/pihole:latest
+        ports:
+          - "53:53/tcp"
+          - "53:53/udp"
+          - "67:67/udp"
+          - "80:80/tcp"
+        environment:
+          TZ: 'Asia/Jakarta'
+          WEBPASSWORD: 'password'
+        volumes:
+          - './etc-pihole:/etc/pihole'
+          - './etc-dnsmasq.d:/etc/dnsmasq.d'
+        cap_add:
+          - NET_ADMIN
+        restart: unless-stopped
+        
+4. Jalankan perintah berikut untuk membuat service docker :
+    $ doas docker-compose up -d
+    
+5. Cek IP Host docker, kemudian buka browser dan akses ke alamat :
+    http://IPADDRESS/admin
+    
+6. Isikan password lalu login

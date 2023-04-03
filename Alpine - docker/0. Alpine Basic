@@ -1,0 +1,43 @@
+1. Sudo pada alpine linux diganti dengan doas
+    $ doas ping 8.8.8.8
+    
+2. systemctl diganti dengan rc-*
+    # systemctl status -> rc-status (akan menglist semua service yang running)
+    # systemctl enable -> rc-update add [namaservice]
+    # systemctl start -> rc-service [namaservice] start
+    # systemctl stop -> rc-service [namaservice] stop
+    # systemctl restart -> rc-service [namaservice] restart
+    
+3. repository terletak di /etc/apk/repositories
+
+4. Package Management pada Alpine Linux adalah APK
+    # apk add -> untuk menginstall
+    # apk del -> untuk uninstall
+    # apk update -> untuk update index repositories
+    # apk upgrade -> untuk melakukan update package
+    # apk search -> untuk mencari paket yang diinginkan
+    # apk list -> menglist semua paket yang tersedia
+    
+5. Membuat IP ADD Static
+    # cat /etc/network/interfaces
+    # nano /etc/network/interfaces
+    akan menampilkan output seperti berikut :
+        
+        auto lo
+        iface lo inet loopbak
+        
+        auto eth0
+        iface eth0 inet dhcp
+    
+    Ubah bagian "iface eth0 inet dhcp" menjadi:
+    iface eth0 inet static
+        address 192.168.8.104/24
+        gateway 192.168.8.1
+        hostname alpine-docker
+    
+    Jika ingin mengubah DNS Server, ada di file /etc/resolv.conf.
+    Setelah melakukan perubahan, restart network manager:
+        # rc-service networking restart
+        
+    Cek apakah ip sudah berubah
+        # ip a

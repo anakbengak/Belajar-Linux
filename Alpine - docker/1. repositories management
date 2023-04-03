@@ -1,0 +1,10 @@
+1. login as root
+    # doas su
+    # nano /etc/apk/repositories
+    
+    http://dl-cdn.alpinelinux.org/alpine/v3.17/main
+    http://dl-cdn.alpinelinux.org/alpine/v3.17/community
+
+    # apk update
+    
+    Warning: Changing the repositories to latest-stable may initiate unexpected release upgrades.
