@@ -1,0 +1,102 @@
+1. Install web server, php dan database
+    ```bash
+	# apt install apache2 libapache2-mod-php mariadb-server php-xml php-cli php-cgi php-mysql php-mbstring php-gd php-curl php-zip wget unzip
+	```
+
+2. Ubah beberapa variabel
+    ```bash
+	# nano /etc/php/8.1/apache2/php.ini
+    ```
+	
+    > memory_limit = 512M
+    > upload_max_filesize = 500M
+    > post_max_size = 500M
+    > max_execution_time = 300
+    > date.timezone = Asia/Jakarta
+
+3. Start services
+   ```bash
+	# systemctl start apache2
+    # systemctl enable apache2
+    # systemctl start mariadb
+    # systemctl enable mariadb
+	```
+
+4. create db
+   ```sql
+	# mysql -u root
+    []> create database nextcloud;
+    []> create user 'bob'@'localhost' identified by 'rahasiaya';
+    []> grant all privileges on nextcloud.* to 'bob'@'localhost';
+    []> flush privileges;
+    []> exit
+	```
+
+5. Download nextcloud
+   ```bash
+    # cd Downloads    
+    # wget https://download.nextcloud.com/server/releases/latest.zip
+    # unzip latest.zip
+    # mv nextcloud /var/www/html
+    # chown -R www-data:www-data /var/www/html/nextcloud
+    # chmod 755 /var/www/html/nextcloud/
+   ```
+
+6. lakukan pengaturan virtual host    
+   ```bash
+	# nano /etc/apache2/sites-available/nextcloud.conf
+    ```
+	```	
+	<VirtualHost *:80>
+		ServerAdmin persandian@pidiekab.go.id
+		DocumentRoot /var/www/html/nextcloud/
+		ServerName 192.168.0.123
+		Alias /nextcloud "/var/www/html/nextcloud/"
+		<Directory /var/www/html/nextcloud/>
+			Options +FollowSymlinks
+			AllowOverride All
+			Require all granted
+				<IfModule mod_dav.c>
+				  Dav off
+				</IfModule>
+			SetEnv HOME /var/www/html/nextcloud
+			SetEnv HTTP_HOME /var/www/html/nextcloud
+		</Directory>
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+	</VirtualHost>
+	```
+7. aktivasi ekstensi dan modul
+	```bash
+    # a2ensite nextcloud.conf
+    # a2enmod rewrite
+    # a2enmod headers
+    # a2enmod env
+    # a2enmod dir
+    # a2enmod mime
+    # systemctl restart apache2
+	```
+
+8. Buat Admin Account
+	Buka web browser, akses ke 192.168.0.123.
+    
+	Admin account
+	```
+	username : bob
+	password : P455w0rd
+     "Data folder" biarkan default
+    ```
+	Database
+	```
+	username : bob
+	password : P455w0rd
+	dbname   : nextcloud
+	db host  : localhost
+	```
+
+
+
+
+
+
+
