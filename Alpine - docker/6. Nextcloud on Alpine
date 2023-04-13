@@ -1,0 +1,159 @@
+============================================================================================
+WARNING :: Sukses, tapi tidak dapat menginstall Document Server Community pada Nextcloud;
+Aplikasi dibutuhkan untuk dapat menjalankan OnlyOffice
+============================================================================================
+
+1. Update repository (pastikan repo menggunakan http atau https)
+		# apk update
+		
+2. Install database (kita menggunakan mariadb)
+		# apk add nextcloud-mysql mariadb mariadb-client
+		
+3. Konfigurasi mariadb
+		# mysql_install_db --user=mysql --datadir=/var/lib/mysql
+		# service mariadb start
+		# rc-update add mariadb
+		# mysql_secure_installation
+	di sini nanti kita akan membuat username dan password
+	
+4. Konfigurasi database
+		# mysql -u root -p
+		[]> CREATE DATABASE nextcloud;
+		[]> GRANT ALL ON nextcloud.* TO 'mycloud'@'localhost' IDENTIFIED BY 'test123';
+		[]> GRANT ALL ON nextcloud.* TO 'mycloud'@'localhost.localdomain' IDENTIFIED BY 'test123';
+		[]> FLUSH PRIVILEGES;
+		[]> EXIT
+		
+5. Hapus mariadb-client
+	# apk del mariadb-client
+		
+6. Install nextcloud 
+	# apk add nextcloud-initscript
+		
+7. Install Webserver (nginx)
+		# apk add nginx php81-fpm
+	Hapus/nonaktifkan konfigurasi default nginx
+		mv /etc/nginx/http.d/default.conf /etc/nginx/http.d/default.conf.bak
+		
+8. Buat file konfigurasi nginx (/etc/nginx/http.d/mysite.mydomain.com.conf)
+
+server {
+        #listen       [::]:80; #uncomment for IPv6 support
+        listen       80;
+	return 301 https://$host$request_uri;
+	server_name mysite.mydomain.com;
+}
+
+server {
+        #listen       [::]:443 ssl; #uncomment for IPv6 support
+        listen       443 ssl;
+        server_name  mysite.mydomain.com;
+
+	root /usr/share/webapps/nextcloud;
+        index  index.php index.html index.htm;
+	disable_symlinks off;
+
+        ssl_certificate      /etc/ssl/cert.pem;
+        ssl_certificate_key  /etc/ssl/key.pem;
+        ssl_session_timeout  35m;
+
+        #Enable Perfect Forward Secrecy and ciphers without known vulnerabilities
+        #Beware! It breaks compatibility with older OS and browsers (e.g. Windows XP, Android 2.x, etc.)
+	#ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA;
+        #ssl_prefer_server_ciphers  on;
+
+
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        location ~ [^/]\.php(/|$) {
+                fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+                if (!-f $document_root$fastcgi_script_name) {
+                        return 404;
+                }
+                #fastcgi_pass 127.0.0.1:9000;
+		#fastcgi_pass unix:/run/php-fpm/socket;
+		fastcgi_pass unix:/run/nextcloud/fastcgi.sock; # From the nextcloud-initscript package
+                fastcgi_index index.php;
+                include fastcgi.conf;
+	}
+
+        # Help pass nextcloud's configuration checks after install:
+        # Per https://docs.nextcloud.com/server/22/admin_manual/issues/general_troubleshooting.html#service-discovery
+        location ^~ /.well-known/carddav { return 301 /remote.php/dav/; }
+        location ^~ /.well-known/caldav { return 301 /remote.php/dav/; }
+        location ^~ /.well-known/webfinger { return 301 /index.php/.well-known/webfinger; }
+        location ^~ /.well-known/nodeinfo { return 301 /index.php/.well-known/nodeinfo; }
+}
+
+9. Ubah beberapa parameter pada file /etc/nginx/nginx.conf
+	- client_max_body_size 1m; -> client_max_body_size 0;
+	
+10. Ubah beberapa parameter pada file /etc/php81/php-fpm.d/nextcloud.conf
+	- php_admin_value[memory_limit] = 512M
+	- php_admin_value[post_max_size] = 512M
+	- php_admin_value[upload_max_filesize] = 512M
+	
+	Ubah juga settingan di /etc/php81/php.ini
+	upload_max_filesize = 513M
+	max_input_time = 300
+	max_execution_time = 300
+	memory_limit = 1024M
+
+	
+11. Konfigurasi Firewall (/etc/nftables.d/50-https.nft)
+
+#!/usr/sbin/nft -f
+
+table inet filter {
+	chain input {
+		# allow https
+		tcp dport 443 accept comment "accept HTTPS"
+	}
+}
+
+12. Menginstall paket default dan tambahan nextcloud
+		# apk add nextcloud-default-apps nextcloud-files_pdfviewer nextcloud-text nextcloud-notifications nextcloud-files_videoplayer nextcloud-files_external
+		
+
+13. pastikan virtual host sudah dikonfigurasi pada file /etc/nginx/nginx.conf
+		# nano /etc/nginx/nginx.conf
+			include /etc/nginx/http.d/*;
+			
+14. Start services:
+
+	# service nginx start
+	# service nextcloud start
+
+15. Enable automatic startup of services:
+
+	# rc-update add nginx
+	# rc-update add nextcloud
+
+16. Install ssl certificate
+		Tambahkan script berikut pada bagian "trusted_domains" pada file 
+		/etc/nextcloud/config.php
+			
+			'trusted_domains' =>
+				array (
+					0 => '<machine's local IP address>',
+					1 => 'nextcloud.mydomain.com',
+				),
+		}}
+		
+17. Ikut tutorial nomor 7. Lets encrypt Certificate
+
+Jika belum memiliki domain aktif, silahkan buat sel-signed certificate
+
+18. install openssl
+	# apk add openssl
+	
+19. Generate self-signed certificate private key
+	# openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/ssl1.1/private/nextcloud-selfsigned.key -out /etc/ssl1.1/certs/nextcloud-selfsigned.crt
+
+20. Ubah konfigurasi nginx (/etc/nginx/http.d/mysite.mydomain.com.conf)
+	ssl_certificate      /etc/ssl1.1/certs/nextcloud-selfsigned.crt;
+	ssl_certificate_key  /etc/ssl1.1/private/nextcloud-selfsigned.key;
+

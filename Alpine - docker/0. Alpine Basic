@@ -1,15 +1,15 @@
 1. Sudo pada alpine linux diganti dengan doas
     $ doas ping 8.8.8.8
-    
+=============================================================================================
 2. systemctl diganti dengan rc-*
     # systemctl status -> rc-status (akan menglist semua service yang running)
     # systemctl enable -> rc-update add [namaservice]
     # systemctl start -> rc-service [namaservice] start
     # systemctl stop -> rc-service [namaservice] stop
     # systemctl restart -> rc-service [namaservice] restart
-    
+=============================================================================================
 3. repository terletak di /etc/apk/repositories
-
+=============================================================================================
 4. Package Management pada Alpine Linux adalah APK
     # apk add -> untuk menginstall
     # apk del -> untuk uninstall
@@ -17,7 +17,7 @@
     # apk upgrade -> untuk melakukan update package
     # apk search -> untuk mencari paket yang diinginkan
     # apk list -> menglist semua paket yang tersedia
-    
+=============================================================================================    
 5. Membuat IP ADD Static
     # cat /etc/network/interfaces
     # nano /etc/network/interfaces
@@ -41,3 +41,36 @@
         
     Cek apakah ip sudah berubah
         # ip a
+=============================================================================================		
+6. Install SSH-Server
+		# apk search openssh
+		# apk add openssh
+		# rc-update add sshd -> enable saat boot
+		# rc-service sshd start -> starting service
+	Direktori konfigurasi : /etc/ssh/sshd_config
+
+=============================================================================================
+7. Menambah user
+		# adduser yourusername
+	ubah doas config file
+		# nano /etc/doas.d/doas.conf
+	Tambahkan baris berikut dan simpan:
+		permit persist yourusername as root
+=============================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

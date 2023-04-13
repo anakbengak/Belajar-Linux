@@ -1,0 +1,50 @@
+1. Install Python3 dan Pip
+		# apk add --update python3 py3-pip
+		
+2. Install Certbot
+		# apk add certbot
+		
+3. Install Nginx plugin
+		# pip install certbot-nginx
+		
+4. Buat sertifikat
+		# certbot --nginx
+		
+5. Perbarui sertifikat
+		# certbot renew
+		
+6. Perbarui sertifikat secara otomatis
+		# rc-service --list | grep -i crond
+		Output : crond
+		
+		- Jika tidak running, jalankan perintah berikut:
+			# rc-service crond start && rc-update add crond
+		
+		- Buat script untuk memperbaharui sertifikat secara otomatis (/etc/periodic/daily/renew_letsencrypt)
+		
+			#!/bin/sh
+			
+			python3 -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q
+		
+		The script runs the certificate renewal every day between 2:00am - 3:00am. The certificate will be renewed in case if it is left less than 30 days until expiration date.
+		
+		- Buat agar file dapat dieksekusi
+			# chmod a+x /etc/periodic/daily/renew_letsencrypt
+			
+		- Validasi script
+			# run-parts --test /etc/periodic/daily
+		Output : /etc/periodic/daily/renew_letsencrypt
+		
+7. Upgrade Certbot setiap bulan
+	- Buat script /etc/periodic/monthly/upgrade_cerbot
+		
+		#!/bin/sh
+
+		pip3 install --upgrade certbot-nginx
+		
+	- Buat script agar dapat dieksekusi
+		# chmod a+x /etc/periodic/monthly/upgrade_certbot
+
+	- Validasi script
+		# run-parts --test /etc/periodic/monthly
+		Output : /etc/periodic/monthly/upgrade_certbot
